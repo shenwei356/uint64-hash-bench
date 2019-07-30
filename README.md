@@ -14,8 +14,8 @@ $ go test . -bench=Benchmark* -benchmem
 goos: linux
 goarch: amd64
 pkg: github.com/shenwei356/uint64-hash-bench
-BenchmarkXxhash-4                               200000000                6.73 ns/op            0 B/op          0 allocs/op
-BenchmarkMurmur3-4                              50000000                 24.2 ns/op            0 B/op          0 allocs/op
-BenchmarkThomasWangUint64Hash-4                 2000000000               0.32 ns/op            0 B/op          0 allocs/op
-BenchmarkInverseThomasWangUint64Hash-4          200000000                7.27 ns/op            0 B/op          0 allocs/op
+BenchmarkXxhash-16                              300000000                4.17 ns/op            0 B/op          0 allocs/op
+BenchmarkMurmur3-16                             100000000               16.9 ns/op             0 B/op          0 allocs/op
+BenchmarkThomasWangUint64Hash-16                2000000000               1.46 ns/op            0 B/op          0 allocs/op
+BenchmarkInverseThomasWangUint64Hash-16         300000000                5.06 ns/op            0 B/op          0 allocs/op
 ```

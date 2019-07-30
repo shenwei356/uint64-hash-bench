@@ -10,40 +10,50 @@ import (
 
 var be = binary.BigEndian
 
+var H uint64
+
 func BenchmarkXxhash(b *testing.B) {
 	buf := make([]byte, 8)
+	var h uint64
 	for i := 0; i < b.N; i++ {
 		be.PutUint64(buf, uint64(i))
 
-		xxhash.Sum64(buf)
+		h = xxhash.Sum64(buf)
 	}
+	H = h
 }
 
 func BenchmarkMurmur3(b *testing.B) {
 	buf := make([]byte, 8)
+	var h uint64
 	for i := 0; i < b.N; i++ {
 		be.PutUint64(buf, uint64(i))
 
-		murmur3.Sum64(buf)
+		h = murmur3.Sum64(buf)
 	}
+	H = h
 }
 
 func BenchmarkThomasWangUint64Hash(b *testing.B) {
 	var key uint64
+	var h uint64
 	for i := 0; i < b.N; i++ {
 		key = uint64(i)
 
-		ThomasWangUint64Hash(key)
+		h = ThomasWangUint64Hash(key)
 	}
+	H = h
 }
 
 func BenchmarkInverseThomasWangUint64Hash(b *testing.B) {
 	var key uint64
+	var h uint64
 	for i := 0; i < b.N; i++ {
 		key = uint64(i)
 
-		InverseThomasWangUint64Hash(key)
+		h = InverseThomasWangUint64Hash(key)
 	}
+	H = h
 }
 
 func TestThomasWangUint64Hahs(t *testing.T) {
@@ -56,4 +66,5 @@ func TestThomasWangUint64Hahs(t *testing.T) {
 			t.Errorf("error when testing for %d", i)
 		}
 	}
+	H = h
 }
