@@ -2,6 +2,8 @@ package bench
 
 import (
 	"encoding/binary"
+	"hash/maphash"
+	"sync"
 	"testing"
 
 	"github.com/cespare/xxhash"
@@ -12,13 +14,44 @@ var be = binary.BigEndian
 
 var H uint64
 
-func BenchmarkXxhash(b *testing.B) {
+func BenchmarkGoMapHash(b *testing.B) {
 	buf := make([]byte, 8)
 	var h uint64
+
+	var hash maphash.Hash
 	for i := 0; i < b.N; i++ {
 		be.PutUint64(buf, uint64(i))
 
-		h = xxhash.Sum64(buf)
+		hash.Reset()
+		hash.Write(buf)
+		h = hash.Sum64()
+	}
+	H = h
+}
+
+func BenchmarkXxhashMethod(b *testing.B) {
+	buf := make([]byte, 8)
+	var h uint64
+
+	hash := xxhash.New()
+	for i := 0; i < b.N; i++ {
+		be.PutUint64(buf, uint64(i))
+
+		hash.Reset()
+		hash.Write(buf)
+		h = hash.Sum64()
+	}
+	H = h
+}
+
+func BenchmarkXxhashFunction(b *testing.B) {
+	buf := make([]byte, 8)
+	var h uint64
+
+	for i := 0; i < b.N; i++ {
+		be.PutUint64(buf, uint64(i))
+
+		xxhash.Sum64(buf)
 	}
 	H = h
 }
@@ -26,10 +59,14 @@ func BenchmarkXxhash(b *testing.B) {
 func BenchmarkMurmur3(b *testing.B) {
 	buf := make([]byte, 8)
 	var h uint64
+
+	hash := murmur3.New64()
 	for i := 0; i < b.N; i++ {
 		be.PutUint64(buf, uint64(i))
 
-		h = murmur3.Sum64(buf)
+		hash.Reset()
+		hash.Write(buf)
+		h = hash.Sum64()
 	}
 	H = h
 }
@@ -65,6 +102,19 @@ func TestThomasWangUint64Hahs(t *testing.T) {
 		if j != i {
 			t.Errorf("error when testing for %d", i)
 		}
+	}
+	H = h
+}
+
+func BenchmarkMutexLockUnlock(b *testing.B) {
+	var h uint64
+	var mux sync.Mutex
+	for i := 0; i < b.N; i++ {
+		mux.Lock()
+
+		h = uint64(i)
+
+		mux.Unlock()
 	}
 	H = h
 }
