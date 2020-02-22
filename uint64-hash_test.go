@@ -5,6 +5,7 @@ import (
 	"hash/maphash"
 	"sync"
 	"testing"
+	"math/rand"
 
 	"github.com/cespare/xxhash"
 	"github.com/spaolacci/murmur3"
@@ -117,4 +118,30 @@ func BenchmarkMutexLockUnlock(b *testing.B) {
 		mux.Unlock()
 	}
 	H = h
+}
+
+var F float64
+func BenchmarkRandFloat64(b *testing.B) {
+	var f float64
+	for i := 0; i < b.N; i++ {
+		f = rand.Float64()
+	}
+	F = f
+}
+
+func BenchmarkRandFloat64Chanel(b *testing.B) {
+	var f float64
+	ch := make(chan float64, 5)
+	done := make(chan int)
+	go func() {
+		for i := 0; i < b.N;i++ {
+			ch <- rand.Float64()
+		}
+		done <-1
+	}()
+	for i := 0; i < b.N; i++ {
+		f = <-ch
+	}
+	F = f
+	<-done
 }
